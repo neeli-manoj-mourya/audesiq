@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Audesiq — Developer Handoff</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --color-bg: #F5F3FF;
+      --color-primary: #5B4DFF;
+      --color-primary-dark: #4A3FE6;
+      --color-accent: #FFD400;
+      --color-card: #FFFFFF;
+      --color-text-primary: #1E1E1E;
+      --color-text-secondary: #6B7280;
+      --color-text-disabled: #9CA3AF;
+      --color-surface-accent: #EDEBFF;
+      --color-divider: rgba(91,77,255,0.08);
+      --color-success: #16A34A;
+      --color-error: #EF4444;
+      --color-subtitle-overlay: rgba(255,255,255,0.9);
+      --font-brand: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-body: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'Fira Code', 'Courier New', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-card: 0 6px 18px rgba(91,77,255,0.08);
+      --shadow-hover: 0 12px 32px rgba(91,77,255,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-brand);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-surface-accent);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      height: 56px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: 32px;
+      text-decoration: none;
+    }
+
+    .nav-logo img { width: 32px; height: 32px; }
+
+    .nav-logo span {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-links a:hover {
+      background: var(--color-surface-accent);
+      color: var(--color-primary);
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #F5F3FF 0%, #EDEBFF 50%, #d8d4ff 100%);
+      border-bottom: 1px solid var(--color-surface-accent);
+      padding: 64px 32px 56px;
+      text-align: center;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--color-surface-accent);
+      color: var(--color-primary);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      margin-top: 56px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .section-label h2 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-surface-accent);
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--color-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .card-pad { padding: 24px; }
+
+    /* ── COLOR GRID ── */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .swatch-card {
+      background: var(--color-card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .swatch-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .swatch-block {
+      height: 72px;
+      position: relative;
+    }
+
+    .swatch-block .copy-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.15);
+      opacity: 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      transition: opacity 0.15s;
+    }
+
+    .swatch-card:hover .copy-hint { opacity: 1; }
+
+    .swatch-info { padding: 10px 12px; }
+
+    .swatch-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      display: block;
+    }
+
+    .swatch-hex {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .swatch-token {
+      font-size: 10px;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .type-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .type-table th {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px 16px;
+      text-align: left;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-surface-accent);
+    }
+
+    .type-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-surface-accent);
+      vertical-align: middle;
+    }
+
+    .type-table tr:last-child td { border-bottom: none; }
+
+    .type-preview { margin-bottom: 4px; }
+
+    .type-meta {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--color-text-secondary);
+    }
+
+    .type-token {
+      display: inline-block;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      background: var(--color-surface-accent);
+      color: var(--color-primary);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .android-badge {
+      font-size: 10px;
+      font-weight: 600;
+      background: #E8F5E9;
+      color: #1B5E20;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+    }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: #1E1E1E;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: #E2E8F0;
+      white-space: pre;
+    }
+
+    .code-block .kw  { color: #C792EA; }
+    .code-block .var { color: #82AAFF; }
+    .code-block .val { color: #C3E88D; }
+    .code-block .cmt { color: #546E7A; font-style: italic; }
+    .code-block .str { color: #F78C6C; }
+
+    /* ── COMPONENT PREVIEWS ── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .comp-card {
+      background: var(--color-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 28px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .comp-card.dark { background: #1E1E1E; }
+
+    .comp-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+    }
+
+    .comp-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+
+    .comp-spec {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+      background: var(--color-surface-accent);
+      border-radius: 6px;
+      padding: 3px 8px;
+      text-align: center;
+    }
+
+    /* ── ACTUAL COMPONENTS ── */
+
+    /* Primary button */
+    .btn-primary {
+      height: 52px;
+      padding: 0 20px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: var(--font-brand);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover { background: var(--color-primary-dark); transform: translateY(-1px); }
+
+    .btn-outline {
+      height: 52px;
+      padding: 0 20px;
+      background: transparent;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 14px;
+      font-family: var(--font-brand);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-outline:hover { background: var(--color-surface-accent); }
+
+    /* Play button */
+    .play-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .play-btn:hover { background: var(--color-primary-dark); transform: scale(1.05); }
+
+    .play-btn svg { margin-left: 3px; }
+
+    /* Small control */
+    .ctrl-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--color-surface-accent);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .ctrl-btn:hover { border-color: var(--color-primary); background: #fff; }
+
+    /* Sync button */
+    .sync-btn {
+      height: 52px;
+      min-width: 160px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: var(--font-brand);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sync-progress-ring {
+      width: 22px;
+      height: 22px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .sync-progress-ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .sync-ring-bg { stroke: rgba(255,255,255,0.2); }
+    .sync-ring-fill {
+      stroke: var(--color-accent);
+      stroke-dasharray: 56.5;
+      stroke-dashoffset: 20;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s;
+    }
+
+    /* Search bar */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      height: 56px;
+      border-radius: var(--radius-md);
+      background: var(--color-card);
+      border: 1px solid var(--color-surface-accent);
+      padding: 0 16px;
+      gap: 10px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 2px 8px rgba(91,77,255,0.05);
+    }
+
+    .search-bar input {
+      border: none;
+      outline: none;
+      flex: 1;
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--color-text-primary);
+      background: transparent;
+    }
+
+    .search-bar input::placeholder { color: var(--color-text-secondary); }
+
+    /* Badge / toggle */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      padding: 0 12px;
+      border-radius: 14px;
+      font-family: var(--font-brand);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+
+    .badge-active { background: var(--color-primary); color: #fff; }
+    .badge-inactive { background: var(--color-surface-accent); color: var(--color-text-secondary); }
+
+    /* Seek bar */
+    .seekbar-wrap {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .seekbar-track {
+      position: relative;
+      height: 6px;
+      background: var(--color-surface-accent);
+      border-radius: 3px;
+      margin: 11px 0;
+    }
+
+    .seekbar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 40%;
+      background: var(--color-primary);
+      border-radius: 3px;
+    }
+
+    .seekbar-thumb {
+      position: absolute;
+      top: 50%;
+      left: 40%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2), 0 0 0 3px var(--color-primary);
+    }
+
+    .seekbar-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Movie card */
+    .movie-card {
+      width: 160px;
+      border-radius: var(--radius-md);
+      background: var(--color-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+    }
+
+    .movie-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+    .movie-poster {
+      width: 160px;
+      height: 240px;
+      background: linear-gradient(160deg, var(--color-surface-accent), #c4bcff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .poster-badge-row {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .poster-badge {
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 10px;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .movie-info { padding: 10px 12px; }
+
+    .movie-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .movie-meta {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+
+    /* CC container */
+    .cc-container {
+      background: var(--color-subtitle-overlay);
+      border-radius: var(--radius-md);
+      padding: 22px 16px;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--color-text-primary);
+      text-align: center;
+      max-width: 380px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Player toolbar */
+    .player-toolbar {
+      height: 56px;
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-surface-accent);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      border-radius: 12px 12px 0 0;
+      max-width: 390px;
+    }
+
+    .toolbar-center {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    /* Loader */
+    .loader-ring {
+      width: 56px;
+      height: 56px;
+    }
+
+    /* Spacing system */
+    .spacing-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .spacing-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spacing-block {
+      background: var(--color-primary);
+      border-radius: 3px;
+      opacity: 0.8;
+    }
+
+    .spacing-val {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--color-text-secondary);
+    }
+
+    /* ── GRADIENT PREVIEWS ── */
+    .gradient-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .gradient-chip {
+      border-radius: var(--radius-md);
+      height: 80px;
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      align-items: flex-end;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* ── PLAYER SCREEN MOCKUP ── */
+    .phone-frame {
+      width: 300px;
+      background: var(--color-card);
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(91,77,255,0.18), 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 1px solid rgba(91,77,255,0.1);
+    }
+
+    .phone-status {
+      height: 44px;
+      background: var(--color-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-surface-accent);
+    }
+
+    .phone-header {
+      height: 56px;
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-surface-accent);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .phone-body {
+      background: var(--color-bg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .phone-movie-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .phone-meta {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    .phone-cc {
+      background: var(--color-subtitle-overlay);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--color-text-primary);
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .phone-controls {
+      background: var(--color-card);
+      border-top: 1px solid var(--color-surface-accent);
+      padding: 12px 16px 16px;
+    }
+
+    .phone-seek {
+      position: relative;
+      height: 6px;
+      background: var(--color-surface-accent);
+      border-radius: 3px;
+      margin-bottom: 12px;
+    }
+
+    .phone-seek-fill {
+      position: absolute;
+      left: 0; top: 0;
+      height: 100%;
+      width: 38%;
+      background: var(--color-primary);
+      border-radius: 3px;
+    }
+
+    .phone-seek-thumb {
+      position: absolute;
+      top: 50%;
+      left: 38%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 2.5px var(--color-primary);
+    }
+
+    .phone-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .phone-ctrl-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .phone-play {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-skip {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--color-surface-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-sync {
+      margin-top: 10px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ── TOKENS TABLE ── */
+    .tokens-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .tokens-table th {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px 16px;
+      text-align: left;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-surface-accent);
+    }
+
+    .tokens-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--color-surface-accent);
+      font-family: var(--font-mono);
+    }
+
+    .tokens-table tr:last-child td { border-bottom: none; }
+
+    .tokens-table td:first-child { color: var(--color-primary); }
+
+    .tokens-table td:nth-child(2) { color: #16A34A; }
+
+    /* ── ACCESSIBILITY ── */
+    .a11y-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .a11y-card {
+      background: var(--color-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .a11y-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .a11y-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 6px;
+    }
+
+    .a11y-text {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── CONTRAST CHIPS ── */
+    .contrast-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .contrast-chip {
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .contrast-chip small { font-size: 10px; font-weight: 500; opacity: 0.7; }
+    .contrast-chip .pass { font-size: 10px; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 1px 6px; display: inline-block; margin-top: 2px; }
+
+    /* copy toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--color-text-primary);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── UTILITIES ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="icons/audesiq-icon-primary.svg" alt="Audesiq"/>
+    <span>Audesiq</span>
+  </a>
+  <div class="nav-links">
+    <a href="#colors">Colors</a>
+    <a href="#typography">Typography</a>
+    <a href="#components">Components</a>
+    <a href="#layout">Layout</a>
+    <a href="#player">Player</a>
+    <a href="#tokens">Tokens</a>
+    <a href="#a11y">Accessibility</a>
+  </div>
+  <span class="nav-badge">Developer Handoff · v1.0</span>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-tag">Developer Handoff</div>
+  <h1>Audesiq Design System</h1>
+  <p>Complete UI specification — color tokens, typography scale, component specs, layout rules and accessibility guidelines for engineers.</p>
+</div>
+
+<div class="container">
+
+  <!-- ── COLORS ── -->
+  <section id="colors">
+    <div class="section-label"><h2>Color System</h2></div>
+    <div class="color-grid">
+      <div class="swatch-card" onclick="copyText('#5B4DFF', this)">
+        <div class="swatch-block" style="background:#5B4DFF"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Primary Purple</span><span class="swatch-hex">#5B4DFF</span><span class="swatch-token">--color-primary</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#4A3FE6', this)">
+        <div class="swatch-block" style="background:#4A3FE6"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Primary Dark</span><span class="swatch-hex">#4A3FE6</span><span class="swatch-token">--color-primary-dark</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#FFD400', this)">
+        <div class="swatch-block" style="background:#FFD400"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Accent Yellow</span><span class="swatch-hex">#FFD400</span><span class="swatch-token">--color-accent</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#F5F3FF', this)">
+        <div class="swatch-block" style="background:#F5F3FF; border-bottom:1px solid #EDEBFF"><div class="copy-hint" style="color:#5B4DFF">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">App Background</span><span class="swatch-hex">#F5F3FF</span><span class="swatch-token">--color-bg</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#FFFFFF', this)">
+        <div class="swatch-block" style="background:#FFFFFF; border-bottom:1px solid #EDEBFF"><div class="copy-hint" style="color:#5B4DFF">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Card / White</span><span class="swatch-hex">#FFFFFF</span><span class="swatch-token">--color-card</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#EDEBFF', this)">
+        <div class="swatch-block" style="background:#EDEBFF"><div class="copy-hint" style="color:#5B4DFF">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Surface Accent</span><span class="swatch-hex">#EDEBFF</span><span class="swatch-token">--color-surface-accent</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#1E1E1E', this)">
+        <div class="swatch-block" style="background:#1E1E1E"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Text Primary</span><span class="swatch-hex">#1E1E1E</span><span class="swatch-token">--text-primary</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#6B7280', this)">
+        <div class="swatch-block" style="background:#6B7280"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Text Secondary</span><span class="swatch-hex">#6B7280</span><span class="swatch-token">--text-secondary</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#9CA3AF', this)">
+        <div class="swatch-block" style="background:#9CA3AF"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Disabled</span><span class="swatch-hex">#9CA3AF</span><span class="swatch-token">--text-disabled</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#16A34A', this)">
+        <div class="swatch-block" style="background:#16A34A"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Success</span><span class="swatch-hex">#16A34A</span><span class="swatch-token">--color-success</span></div>
+      </div>
+      <div class="swatch-card" onclick="copyText('#EF4444', this)">
+        <div class="swatch-block" style="background:#EF4444"><div class="copy-hint">Click to copy</div></div>
+        <div class="swatch-info"><span class="swatch-name">Error</span><span class="swatch-hex">#EF4444</span><span class="swatch-token">--color-error</span></div>
+      </div>
+    </div>
+
+    <!-- Gradients -->
+    <div style="margin-top:24px;">
+      <p style="font-size:12px;font-weight:600;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Gradients</p>
+      <div class="gradient-row">
+        <div class="gradient-chip" style="background:linear-gradient(180deg,#F5F3FF 0%,#EDEBFF 40%,#5B4DFF 100%); color:#5B4DFF">
+          Splash Background<br/><small style="font-family:monospace;font-size:9px">#F5F3FF → #EDEBFF → #5B4DFF</small>
+        </div>
+        <div class="gradient-chip" style="background:linear-gradient(135deg,#6B5FFF 0%,#5B4DFF 100%); color:#fff">
+          Button Hover<br/><small style="font-family:monospace;font-size:9px;color:rgba(255,255,255,0.7)">#6B5FFF → #5B4DFF</small>
+        </div>
+        <div class="gradient-chip" style="background:linear-gradient(160deg,#EDEBFF,#c4bcff); color:#5B4DFF">
+          Poster Placeholder<br/><small style="font-family:monospace;font-size:9px">#EDEBFF → #c4bcff</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TYPOGRAPHY ── -->
+  <section id="typography">
+    <div class="section-label"><h2>Typography</h2></div>
+    <div class="card">
+      <table class="type-table">
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>Token</th>
+            <th>Size / Weight / LH</th>
+            <th>Android</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="type-preview" style="font-size:32px;font-weight:700;line-height:40px;color:#5B4DFF">Audesiq</div><div class="type-meta">Display / Wordmark</div></td>
+            <td><span class="type-token">--display-1</span></td>
+            <td class="type-meta">32px / 700 / 40px</td>
+            <td><span class="android-badge">32sp Bold</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview" style="font-size:24px;font-weight:600;line-height:30px">Section Header</div><div class="type-meta">H2</div></td>
+            <td><span class="type-token">--h2</span></td>
+            <td class="type-meta">24px / 600 / 30px</td>
+            <td><span class="android-badge">24sp SemiBold</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview" style="font-size:18px;font-weight:600;line-height:24px">Card / Movie Title</div><div class="type-meta">Card Title</div></td>
+            <td><span class="type-token">--card-title</span></td>
+            <td class="type-meta">18px / 600 / 24px</td>
+            <td><span class="android-badge">18sp SemiBold</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview" style="font-size:16px;font-weight:400;line-height:22px;font-family:'Open Sans',sans-serif">Body description text for longer reading copy.</div><div class="type-meta">Body (Open Sans)</div></td>
+            <td><span class="type-token">--body</span></td>
+            <td class="type-meta">16px / 400 / 22px</td>
+            <td><span class="android-badge">16sp Regular</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview" style="font-size:14px;font-weight:500;line-height:20px;color:#6B7280">2024 · 1h 54m · Drama</div><div class="type-meta">Subhead / Metadata</div></td>
+            <td><span class="type-token">--subhead</span></td>
+            <td class="type-meta">14px / 500 / 20px</td>
+            <td><span class="android-badge">14sp Medium</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview" style="font-size:24px;font-weight:600;line-height:34px">"She walks into the room and the music stops."</div><div class="type-meta">Closed Captions / Subtitle</div></td>
+            <td><span class="type-token">--subtitle</span></td>
+            <td class="type-meta">24px / 600 / 34px<br/><small>Scale: 28–32px</small></td>
+            <td><span class="android-badge">24sp SemiBold</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview" style="display:flex;gap:8px;align-items:center"><span class="badge badge-active">AD</span><span class="badge badge-active">CC</span></div><div class="type-meta">Badge Text</div></td>
+            <td><span class="type-token">--badge</span></td>
+            <td class="type-meta">12px / 600 / 16px</td>
+            <td><span class="android-badge">12sp SemiBold</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-preview"><button class="btn-primary" style="height:40px;font-size:16px;padding:0 16px;border-radius:10px">Sync Movie</button></div><div class="type-meta">Button Label</div></td>
+            <td><span class="type-token">--button</span></td>
+            <td class="type-meta">16px / 600 / 20px</td>
+            <td><span class="android-badge">16sp SemiBold</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── COMPONENTS ── -->
+  <section id="components">
+    <div class="section-label"><h2>Component Specs</h2></div>
+    <div class="comp-grid">
+
+      <!-- Primary Button -->
+      <div class="comp-card">
+        <div class="comp-preview"><button class="btn-primary">Sync Movie</button></div>
+        <span class="comp-label">Primary Button</span>
+        <span class="comp-spec">h:52px · r:14px · 16px/600</span>
+      </div>
+
+      <!-- Outline Button -->
+      <div class="comp-card">
+        <div class="comp-preview"><button class="btn-outline">Learn More</button></div>
+        <span class="comp-label">Outline Button</span>
+        <span class="comp-spec">h:52px · r:14px · border:1.5px</span>
+      </div>
+
+      <!-- Play Button -->
+      <div class="comp-card">
+        <div class="comp-preview">
+          <button class="play-btn" aria-label="Play">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+        <span class="comp-label">Play Button</span>
+        <span class="comp-spec">64×64px · r:32px</span>
+      </div>
+
+      <!-- Pause Button -->
+      <div class="comp-card">
+        <div class="comp-preview">
+          <button class="play-btn" aria-label="Pause">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+        </div>
+        <span class="comp-label">Pause Button</span>
+        <span class="comp-spec">64×64px · r:32px</span>
+      </div>
+
+      <!-- Small control -->
+      <div class="comp-card">
+        <div class="comp-preview" style="gap:10px;display:flex">
+          <button class="ctrl-btn" aria-label="Skip Back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#5B4DFF"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          </button>
+          <button class="ctrl-btn" aria-label="Skip Forward">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#5B4DFF"><path d="M16 6h2v12h-2zm-1.5 6L6 6v12z"/></svg>
+          </button>
+        </div>
+        <span class="comp-label">Skip Controls</span>
+        <span class="comp-spec">44×44px · r:12px</span>
+      </div>
+
+      <!-- Sync button with progress -->
+      <div class="comp-card">
+        <div class="comp-preview">
+          <button class="sync-btn">
+            <div class="sync-progress-ring">
+              <svg width="22" height="22" viewBox="0 0 22 22">
+                <circle class="sync-ring-bg" cx="11" cy="11" r="9" fill="none" stroke-width="3"/>
+                <circle class="sync-ring-fill" cx="11" cy="11" r="9" fill="none" stroke-width="3"/>
+              </svg>
+            </div>
+            SYNC MOVIE
+          </button>
+        </div>
+        <span class="comp-label">Sync Button (progress)</span>
+        <span class="comp-spec">h:52px · min-w:140px · Yellow arc</span>
+      </div>
+
+      <!-- Search bar -->
+      <div class="comp-card" style="align-items:stretch">
+        <div class="comp-preview" style="width:100%;justify-content:stretch">
+          <div class="search-bar" style="max-width:100%">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search movies…" readonly/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+          </div>
+        </div>
+        <span class="comp-label">Search Bar</span>
+        <span class="comp-spec">h:56px · r:12px · 16px/400</span>
+      </div>
+
+      <!-- AD/CC Badges -->
+      <div class="comp-card">
+        <div class="comp-preview" style="gap:10px;display:flex;flex-direction:column;align-items:center">
+          <div style="display:flex;gap:8px">
+            <span class="badge badge-active">AD</span>
+            <span class="badge badge-active">CC</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <span class="badge badge-inactive">AD</span>
+            <span class="badge badge-inactive">CC</span>
+          </div>
+        </div>
+        <span class="comp-label">AD / CC Badges</span>
+        <span class="comp-spec">h:28px · r:14px · 12px/600</span>
+      </div>
+
+      <!-- Seek bar -->
+      <div class="comp-card" style="align-items:stretch">
+        <div class="comp-preview" style="width:100%;flex-direction:column">
+          <div class="seekbar-wrap" style="max-width:100%">
+            <div class="seekbar-track">
+              <div class="seekbar-fill"></div>
+              <div class="seekbar-thumb"></div>
+            </div>
+            <div class="seekbar-times"><span>18:42</span><span>1:54:00</span></div>
+          </div>
+        </div>
+        <span class="comp-label">Seek Bar</span>
+        <span class="comp-spec">track:6px · thumb:18px · target:44px</span>
+      </div>
+
+      <!-- Movie card -->
+      <div class="comp-card">
+        <div class="comp-preview">
+          <div class="movie-card">
+            <div class="movie-poster">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="#5B4DFF" opacity="0.3"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+              <div class="poster-badge-row">
+                <span class="poster-badge">AD</span>
+                <span class="poster-badge">CC</span>
+              </div>
+            </div>
+            <div class="movie-info">
+              <div class="movie-title">Movie Title</div>
+              <div class="movie-meta">2024 · Drama</div>
+            </div>
+          </div>
+        </div>
+        <span class="comp-label">Movie Card</span>
+        <span class="comp-spec">160×240 poster · r:12px</span>
+      </div>
+
+      <!-- CC Container -->
+      <div class="comp-card" style="background:#5B4DFF">
+        <div class="comp-preview">
+          <div class="cc-container" style="font-size:16px;padding:16px;max-width:260px">
+            "She walks into the room and the music stops."
+          </div>
+        </div>
+        <span class="comp-label" style="color:#fff">CC / Subtitle Container</span>
+        <span class="comp-spec" style="background:rgba(255,255,255,0.15);color:#FFD400">24px/600 · rgba(255,255,255,0.9)</span>
+      </div>
+
+      <!-- Loader ring -->
+      <div class="comp-card">
+        <div class="comp-preview">
+          <svg class="loader-ring" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(91,77,255,0.15)" stroke-width="5"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#FFD400" stroke-width="5"
+              stroke-dasharray="138" stroke-dashoffset="50" stroke-linecap="round"
+              style="transform-origin:center;transform:rotate(-90deg);animation:spin 1.5s linear infinite"/>
+          </svg>
+          <style>@keyframes spin { to { transform: rotate(270deg); } }</style>
+        </div>
+        <span class="comp-label">Circular Progress Loader</span>
+        <span class="comp-spec">ring:5px · Yellow arc · Purple bg</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── LAYOUT & SPACING ── -->
+  <section id="layout">
+    <div class="section-label"><h2>Layout &amp; Spacing</h2></div>
+    <div class="two-col">
+      <div class="card card-pad">
+        <p style="font-size:12px;font-weight:600;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">Spacing Scale (8px grid)</p>
+        <div class="spacing-grid">
+          <div class="spacing-item"><div class="spacing-block" style="width:4px;height:4px"></div><span class="spacing-val">4</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:8px;height:8px"></div><span class="spacing-val">8</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:12px;height:12px"></div><span class="spacing-val">12</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:16px;height:16px"></div><span class="spacing-val">16</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:20px;height:20px"></div><span class="spacing-val">20</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:24px;height:24px"></div><span class="spacing-val">24</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:32px;height:32px"></div><span class="spacing-val">32</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:40px;height:40px"></div><span class="spacing-val">40</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:48px;height:48px"></div><span class="spacing-val">48</span></div>
+        </div>
+      </div>
+      <div class="card card-pad">
+        <p style="font-size:12px;font-weight:600;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">Screen Layout Rules</p>
+        <table style="width:100%;font-size:13px;border-collapse:collapse">
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Side padding</td><td style="padding:8px 0;font-weight:600;text-align:right">16 px</td></tr>
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Header height</td><td style="padding:8px 0;font-weight:600;text-align:right">56 px</td></tr>
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Section gap</td><td style="padding:8px 0;font-weight:600;text-align:right">18–24 px</td></tr>
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Card gap (horizontal)</td><td style="padding:8px 0;font-weight:600;text-align:right">12 px</td></tr>
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Card gap (vertical)</td><td style="padding:8px 0;font-weight:600;text-align:right">16–20 px</td></tr>
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Bottom safe area</td><td style="padding:8px 0;font-weight:600;text-align:right">min 16–24 px</td></tr>
+          <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Control strip height</td><td style="padding:8px 0;font-weight:600;text-align:right">110–140 px</td></tr>
+          <tr><td style="padding:8px 0;color:var(--color-text-secondary);font-size:12px">Card border-radius</td><td style="padding:8px 0;font-weight:600;text-align:right">12–16 px</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PLAYER SCREEN ── -->
+  <section id="player">
+    <div class="section-label"><h2>Player Screen</h2></div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start">
+
+      <!-- Phone mockup -->
+      <div class="phone-frame">
+        <div class="phone-status">
+          <span>9:41</span>
+          <span style="display:flex;gap:4px;align-items:center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#1E1E1E"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4 2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#1E1E1E"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </span>
+        </div>
+        <div class="phone-header">
+          <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--color-surface-accent)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div style="flex:1;text-align:center;font-size:14px;font-weight:700;color:#5B4DFF">Audesiq</div>
+          <div style="display:flex;gap:6px">
+            <span class="badge badge-active" style="height:22px;font-size:10px">AD</span>
+            <span class="badge badge-inactive" style="height:22px;font-size:10px">CC</span>
+          </div>
+        </div>
+        <div class="phone-body">
+          <div>
+            <div class="phone-movie-title">The Silent Hour</div>
+            <div class="phone-meta">2024 · 1h 54m · Drama</div>
+          </div>
+          <div class="phone-cc">
+            "She walks into the room and the music stops suddenly."
+          </div>
+        </div>
+        <div class="phone-controls">
+          <div class="phone-seek">
+            <div class="phone-seek-fill"></div>
+            <div class="phone-seek-thumb"></div>
+          </div>
+          <div class="phone-times"><span>18:42</span><span>1:54:00</span></div>
+          <div class="phone-ctrl-row">
+            <div class="phone-skip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#5B4DFF"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+            </div>
+            <div class="phone-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style="margin-left:2px"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <div class="phone-skip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#5B4DFF"><path d="M16 6h2v12h-2zm-1.5 6L6 6v12z"/></svg>
+            </div>
+          </div>
+          <div class="phone-sync">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2.5" stroke-linecap="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            SYNC MOVIE · 64%
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotations -->
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:14px">
+        <div class="card card-pad">
+          <p style="font-size:12px;font-weight:700;color:var(--color-primary);margin-bottom:12px;letter-spacing:0.5px">TOOLBAR</p>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Height</td><td style="padding:7px 0;font-weight:600;text-align:right">56 dp</td></tr>
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Back button target</td><td style="padding:7px 0;font-weight:600;text-align:right">44×44 dp</td></tr>
+            <tr><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Divider</td><td style="padding:7px 0;font-weight:600;text-align:right">1px #EDEBFF</td></tr>
+          </table>
+        </div>
+        <div class="card card-pad">
+          <p style="font-size:12px;font-weight:700;color:var(--color-primary);margin-bottom:12px;letter-spacing:0.5px">CC CONTAINER</p>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Background</td><td style="padding:7px 0;font-weight:600;text-align:right">rgba(255,255,255,0.9)</td></tr>
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Border radius</td><td style="padding:7px 0;font-weight:600;text-align:right">12–16 dp</td></tr>
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Text size</td><td style="padding:7px 0;font-weight:600;text-align:right">24 sp</td></tr>
+            <tr><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Padding</td><td style="padding:7px 0;font-weight:600;text-align:right">20–24px v · 16px h</td></tr>
+          </table>
+        </div>
+        <div class="card card-pad">
+          <p style="font-size:12px;font-weight:700;color:var(--color-primary);margin-bottom:12px;letter-spacing:0.5px">CONTROLS</p>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Seek track height</td><td style="padding:7px 0;font-weight:600;text-align:right">6 dp</td></tr>
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Thumb size</td><td style="padding:7px 0;font-weight:600;text-align:right">18–22 dp</td></tr>
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Play button</td><td style="padding:7px 0;font-weight:600;text-align:right">64×64 dp</td></tr>
+            <tr style="border-bottom:1px solid var(--color-surface-accent)"><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Skip buttons</td><td style="padding:7px 0;font-weight:600;text-align:right">44×44 dp</td></tr>
+            <tr><td style="padding:7px 0;color:var(--color-text-secondary);font-size:12px">Sync button</td><td style="padding:7px 0;font-weight:600;text-align:right">52dp h · 140dp w</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DESIGN TOKENS ── -->
+  <section id="tokens">
+    <div class="section-label"><h2>Design Tokens</h2></div>
+    <div class="two-col">
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">CSS Variables</p>
+        <div class="code-block" onclick="copyText(this.querySelector('pre').innerText, this)">
+          <pre><span class="kw">:root</span> {
+  <span class="cmt">/* Colors */</span>
+  <span class="var">--color-bg</span>:             <span class="val">#F5F3FF</span>;
+  <span class="var">--color-primary</span>:        <span class="val">#5B4DFF</span>;
+  <span class="var">--color-primary-dark</span>:   <span class="val">#4A3FE6</span>;
+  <span class="var">--color-accent</span>:         <span class="val">#FFD400</span>;
+  <span class="var">--color-card</span>:           <span class="val">#FFFFFF</span>;
+  <span class="var">--color-surface-accent</span>: <span class="val">#EDEBFF</span>;
+  <span class="var">--text-primary</span>:         <span class="val">#1E1E1E</span>;
+  <span class="var">--text-secondary</span>:       <span class="val">#6B7280</span>;
+  <span class="var">--text-disabled</span>:        <span class="val">#9CA3AF</span>;
+  <span class="var">--color-success</span>:        <span class="val">#16A34A</span>;
+  <span class="var">--color-error</span>:          <span class="val">#EF4444</span>;
+  <span class="var">--subtitle-overlay</span>:     <span class="val">rgba(255,255,255,0.9)</span>;
+
+  <span class="cmt">/* Typography */</span>
+  <span class="var">--font-brand</span>:  <span class="str">'Montserrat'</span>, sans-serif;
+  <span class="var">--font-body</span>:   <span class="str">'Open Sans'</span>, sans-serif;
+  <span class="var">--display-1</span>:  <span class="val">32px</span>;
+  <span class="var">--h2</span>:         <span class="val">24px</span>;
+  <span class="var">--card-title</span>: <span class="val">18px</span>;
+  <span class="var">--body</span>:       <span class="val">16px</span>;
+  <span class="var">--subhead</span>:    <span class="val">14px</span>;
+  <span class="var">--subtitle</span>:   <span class="val">24px</span>;
+  <span class="var">--badge</span>:      <span class="val">12px</span>;
+  <span class="var">--button</span>:     <span class="val">16px</span>;
+
+  <span class="cmt">/* Spacing */</span>
+  <span class="var">--space-1</span>: <span class="val">4px</span>;  <span class="var">--space-2</span>: <span class="val">8px</span>;
+  <span class="var">--space-3</span>: <span class="val">12px</span>; <span class="var">--space-4</span>: <span class="val">16px</span>;
+  <span class="var">--space-5</span>: <span class="val">20px</span>; <span class="var">--space-6</span>: <span class="val">24px</span>;
+  <span class="var">--space-8</span>: <span class="val">32px</span>; <span class="var">--space-10</span>: <span class="val">40px</span>;
+}</pre>
+        </div>
+        <p style="font-size:10px;color:var(--color-text-secondary);margin-top:6px;text-align:right">Click to copy</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Android / Flutter Tokens</p>
+        <div class="card">
+          <table class="tokens-table">
+            <thead><tr><th>Token</th><th>Value</th><th>dp/sp</th></tr></thead>
+            <tbody>
+              <tr><td>color.primary</td><td>#5B4DFF</td><td>—</td></tr>
+              <tr><td>color.accent</td><td>#FFD400</td><td>—</td></tr>
+              <tr><td>color.bg</td><td>#F5F3FF</td><td>—</td></tr>
+              <tr><td>size.header</td><td>56px</td><td>56dp</td></tr>
+              <tr><td>size.play-btn</td><td>64px</td><td>64dp</td></tr>
+              <tr><td>size.sync-btn-h</td><td>52px</td><td>52dp</td></tr>
+              <tr><td>size.search-bar</td><td>56px</td><td>56dp</td></tr>
+              <tr><td>size.touch-min</td><td>44px</td><td>44dp</td></tr>
+              <tr><td>text.subtitle</td><td>24px</td><td>24sp</td></tr>
+              <tr><td>text.body</td><td>16px</td><td>16sp</td></tr>
+              <tr><td>text.badge</td><td>12px</td><td>12sp</td></tr>
+              <tr><td>space.screen-h</td><td>16px</td><td>16dp</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACCESSIBILITY ── -->
+  <section id="a11y">
+    <div class="section-label"><h2>Accessibility</h2></div>
+
+    <!-- Contrast chips -->
+    <p style="font-size:12px;font-weight:600;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Contrast Pairs</p>
+    <div class="contrast-row" style="margin-bottom:24px">
+      <div class="contrast-chip" style="background:#1E1E1E;color:#fff">#1E1E1E on #FFFFFF<small>#FFFFFF bg</small><span class="pass">✓ AAA</span></div>
+      <div class="contrast-chip" style="background:#5B4DFF;color:#fff">#FFFFFF on Primary<small>#5B4DFF bg</small><span class="pass">✓ AA</span></div>
+      <div class="contrast-chip" style="background:rgba(255,255,255,0.9);color:#1E1E1E;border:1px solid #EDEBFF">#1E1E1E on CC Overlay<small>rgba(255,255,255,0.9)</small><span class="pass" style="background:rgba(91,77,255,0.1);color:#5B4DFF">✓ AAA</span></div>
+      <div class="contrast-chip" style="background:#FFD400;color:#1E1E1E">#1E1E1E on Accent<small>#FFD400 bg</small><span class="pass" style="background:rgba(0,0,0,0.1)">✓ AA</span></div>
+    </div>
+
+    <div class="a11y-grid">
+      <div class="a11y-card">
+        <div class="a11y-icon">👆</div>
+        <div class="a11y-title">Touch Targets</div>
+        <div class="a11y-text">Min 44×44 dp for all controls. Play button 64 dp. Sync button 52 dp height. Badges min 28–32 dp height.</div>
+      </div>
+      <div class="a11y-card">
+        <div class="a11y-icon">📝</div>
+        <div class="a11y-title">Subtitle Scaling</div>
+        <div class="a11y-text">Default 24sp. Allow user to scale to 28–32sp in app settings. Use at least 3–4 visible lines in CC container.</div>
+      </div>
+      <div class="a11y-card">
+        <div class="a11y-icon">🔊</div>
+        <div class="a11y-title">Screen Reader Labels</div>
+        <div class="a11y-text">Provide aria-label / contentDescription for: Play, Pause, Sync (with %, "Syncing 42%"), AD toggle, CC toggle, Back.</div>
+      </div>
+      <div class="a11y-card">
+        <div class="a11y-icon">🎨</div>
+        <div class="a11y-title">Color + Shape</div>
+        <div class="a11y-text">Never use color alone for state. AD/CC badges use both color fill AND text label. Seek progress uses filled track.</div>
+      </div>
+      <div class="a11y-card">
+        <div class="a11y-icon">🔄</div>
+        <div class="a11y-title">Reduced Motion</div>
+        <div class="a11y-text">Respect prefers-reduced-motion. Disable logo pulse, loader spin animations for users with vestibular disorders.</div>
+      </div>
+      <div class="a11y-card">
+        <div class="a11y-icon">🧭</div>
+        <div class="a11y-title">Focus Order</div>
+        <div class="a11y-text">Ensure semantic focus order: Back → Title → AD/CC → Seek → Skip Back → Play → Skip Forward → Sync.</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast script -->
+<script>
+  function copyText(text, el) {
+    if (typeof text !== 'string') text = el.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

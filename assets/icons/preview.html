@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Audesiq Icon Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: #F4F3FF;
+      color: #1E1E1E;
+      min-height: 100vh;
+      padding: 40px 24px 60px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    header img { width: 48px; height: 48px; }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #5B4DFF;
+      letter-spacing: -0.5px;
+    }
+
+    header span {
+      font-size: 14px;
+      color: #6B6B6B;
+      margin-top: 2px;
+      display: block;
+    }
+
+    section {
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #5B4DFF;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #EDEBFF;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 28px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      min-width: 140px;
+      box-shadow: 0 2px 12px rgba(91,77,255,0.08);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(91,77,255,0.15);
+    }
+
+    .card.dark-bg {
+      background: #1E1E1E;
+    }
+
+    .icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+    }
+
+    .card img {
+      display: block;
+      max-width: 100%;
+      max-height: 80px;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6B6B6B;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+
+    .filename {
+      font-size: 10px;
+      color: #5B4DFF;
+      background: #EDEBFF;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-family: monospace;
+    }
+
+    .swatch-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .swatch-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="audesiq-icon-primary.svg" alt="Audesiq"/>
+    <div>
+      <h1>Audesiq Icon Set</h1>
+      <span>Design system · 10 icons · #5B4DFF · #FFD400 · #FFFFFF · #1E1E1E</span>
+    </div>
+  </header>
+
+  <!-- Color tokens -->
+  <section>
+    <h2>Color Tokens</h2>
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-dot" style="background:#5B4DFF"></div>Primary Purple #5B4DFF</div>
+      <div class="swatch"><div class="swatch-dot" style="background:#FFD400"></div>Accent Yellow #FFD400</div>
+      <div class="swatch"><div class="swatch-dot" style="background:#FFFFFF; border:1px solid #ddd"></div>Card White #FFFFFF</div>
+      <div class="swatch"><div class="swatch-dot" style="background:#1E1E1E"></div>Dark Text #1E1E1E</div>
+      <div class="swatch"><div class="swatch-dot" style="background:#EDEBFF"></div>Soft Purple #EDEBFF</div>
+    </div>
+  </section>
+
+  <!-- Brand icons -->
+  <section>
+    <h2>Brand Icons</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon-wrap"><img src="audesiq-icon-primary.svg" alt="Primary"/></div>
+        <span class="label">Primary Logo</span>
+        <span class="filename">audesiq-icon-primary.svg</span>
+      </div>
+      <div class="card">
+        <div class="icon-wrap"><img src="audesiq-icon-inverse.svg" alt="Inverse"/></div>
+        <span class="label">Inverse Logo</span>
+        <span class="filename">audesiq-icon-inverse.svg</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Playback controls -->
+  <section>
+    <h2>Playback Controls</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon-wrap"><img src="icon-play.svg" alt="Play"/></div>
+        <span class="label">Play</span>
+        <span class="filename">icon-play.svg</span>
+      </div>
+      <div class="card">
+        <div class="icon-wrap"><img src="icon-pause.svg" alt="Pause"/></div>
+        <span class="label">Pause</span>
+        <span class="filename">icon-pause.svg</span>
+      </div>
+      <div class="card">
+        <div class="icon-wrap"><img src="icon-skip-forward.svg" alt="Skip Forward"/></div>
+        <span class="label">Skip Forward</span>
+        <span class="filename">icon-skip-forward.svg</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- UI Icons -->
+  <section>
+    <h2>UI Icons</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon-wrap"><img src="icon-search.svg" alt="Search"/></div>
+        <span class="label">Search</span>
+        <span class="filename">icon-search.svg</span>
+      </div>
+      <div class="card">
+        <div class="icon-wrap"><img src="icon-sync.svg" alt="Sync"/></div>
+        <span class="label">Sync</span>
+        <span class="filename">icon-sync.svg</span>
+      </div>
+      <div class="card">
+        <div class="icon-wrap"><img src="icon-back.svg" alt="Back"/></div>
+        <span class="label">Back Chevron</span>
+        <span class="filename">icon-back.svg</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Badges -->
+  <section>
+    <h2>Accessibility Badges</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon-wrap"><img src="badge-ad.svg" alt="AD"/></div>
+        <span class="label">Audio Description</span>
+        <span class="filename">badge-ad.svg</span>
+      </div>
+      <div class="card">
+        <div class="icon-wrap"><img src="badge-cc.svg" alt="CC"/></div>
+        <span class="label">Closed Captions</span>
+        <span class="filename">badge-cc.svg</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dark surface preview -->
+  <section>
+    <h2>Dark Surface Preview</h2>
+    <div class="grid">
+      <div class="card dark-bg">
+        <div class="icon-wrap"><img src="icon-back.svg" alt="Back" style="filter:invert(1)"/></div>
+        <span class="label" style="color:#aaa">Back (on dark)</span>
+      </div>
+      <div class="card dark-bg">
+        <div class="icon-wrap"><img src="icon-search.svg" alt="Search" style="filter:invert(1)"/></div>
+        <span class="label" style="color:#aaa">Search (on dark)</span>
+      </div>
+      <div class="card dark-bg">
+        <div class="icon-wrap"><img src="icon-play.svg" alt="Play"/></div>
+        <span class="label" style="color:#aaa">Play (on dark)</span>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

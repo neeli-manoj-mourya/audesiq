@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Flutter: Pub Get",
+			"type": "shell",
+			"command": "flutter pub get",
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Flutter: Run (auto-select device)",
+			"type": "shell",
+			"command": "flutter run",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [],
+			"dependsOn": "Flutter: Pub Get"
+		}
+	]
+}

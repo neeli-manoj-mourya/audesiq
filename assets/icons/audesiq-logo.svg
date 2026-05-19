@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Main rounded square -->
+  <rect x="90" y="70" width="332" height="332" rx="70" fill="#5B4DFF"/>
+  <rect x="98" y="78" width="316" height="316" rx="62" stroke="#7B70FF" stroke-width="6"/>
+
+  <!-- White circle -->
+  <circle cx="256" cy="170" r="78" fill="white"/>
+
+  <!-- Play icon -->
+  <polygon points="238,135 238,205 292,170"
+           fill="none"
+           stroke="#5B4DFF"
+           stroke-width="10"
+           stroke-linejoin="round"/>
+
+  <!-- Audio bars moved further down for cleaner spacing -->
+  <rect x="198" y="305" width="14" height="24" rx="7" fill="white"/>
+  <rect x="224" y="290" width="14" height="39" rx="7" fill="white"/>
+  <rect x="250" y="268" width="14" height="61" rx="7" fill="white"/>
+  <rect x="276" y="288" width="14" height="41" rx="7" fill="white"/>
+  <rect x="302" y="307" width="14" height="22" rx="7" fill="white"/>
+
+  <!-- Subtitle lines -->
+  <rect x="95" y="438" width="92" height="10" rx="5" fill="#8B80FF"/>
+  <rect x="210" y="438" width="92" height="10" rx="5" fill="#8B80FF"/>
+  <rect x="325" y="438" width="92" height="10" rx="5" fill="#8B80FF"/>
+
+</svg>

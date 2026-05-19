@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Audesiq logo inverse">
+  <!-- White rounded square background -->
+  <rect x="0" y="0" width="120" height="120" rx="26" fill="#FFFFFF"/>
+
+  <!-- Purple circle -->
+  <circle cx="60" cy="48" r="26" fill="#5B4DFF"/>
+
+  <!-- White play triangle -->
+  <path d="M54 39 L54 57 L72 48 Z" fill="#FFFFFF"/>
+
+  <!-- Equalizer bars in primary purple -->
+  <g opacity="0.45">
+    <rect x="28" y="82" width="6" height="14" rx="3" fill="#5B4DFF"/>
+    <rect x="38" y="76" width="6" height="20" rx="3" fill="#5B4DFF"/>
+    <rect x="48" y="72" width="6" height="24" rx="3" fill="#5B4DFF"/>
+    <rect x="58" y="78" width="6" height="18" rx="3" fill="#5B4DFF"/>
+    <rect x="68" y="84" width="6" height="12" rx="3" fill="#5B4DFF"/>
+    <rect x="78" y="80" width="6" height="16" rx="3" fill="#5B4DFF"/>
+  </g>
+
+  <!-- Subtitle lines -->
+  <rect x="18" y="102" width="56" height="4" rx="2" fill="#5B4DFF" opacity="0.35"/>
+  <rect x="26" y="110" width="38" height="4" rx="2" fill="#5B4DFF" opacity="0.25"/>
+</svg>
