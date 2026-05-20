@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../models/movie.dart';
-import '../theme/theme.dart';
 import '../providers/movies_provider.dart';
+import '../theme/theme.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -13,56 +14,61 @@ class DashboardScreen extends ConsumerWidget {
     final moviesAsync = ref.watch(moviesProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8FB),
+      backgroundColor: const Color(0xFFEFF0F4),
       body: SafeArea(
         child: moviesAsync.when(
           data: (movies) => ListView(
-            padding: const EdgeInsets.only(bottom: 32),
+            padding: const EdgeInsets.only(bottom: 28),
             children: [
+              const SizedBox(height: 8),
               const _Header(),
+              const SizedBox(height: 14),
               const _SearchBar(),
-
+              const SizedBox(height: 18),
               _MovieSection(
                 title: 'Trending Movies',
                 movies: movies.trending,
+                useBackgroundCard: false,
+                titleOverrides: const [
+                  'The Silent Forest',
+                  'Neon Horizon',
+                  'Obsidian Rush',
+                  'Crimson Tide',
+                ],
               ),
-
+              const SizedBox(height: 14),
               _MovieSection(
                 title: 'New Releases',
                 movies: movies.newReleases,
+                useBackgroundCard: true,
+                titleOverrides: const [
+                  'Velvet Nights',
+                  'Star-Crossed',
+                  'The Last Call',
+                  'Phoenix Lane',
+                ],
               ),
-
+              const SizedBox(height: 14),
               _MovieSection(
                 title: 'Recommendations',
                 movies: movies.recommendations,
+                useBackgroundCard: false,
+                titleOverrides: const [
+                  'Midnight Echo',
+                  'Golden Sands',
+                  'Crystal Wave',
+                  'Nova Drift',
+                ],
               ),
-
-              const SizedBox(height: 26),
-
+              const SizedBox(height: 18),
               const _AccessibilityCard(),
-
-              const SizedBox(height: 24),
-
-              Center(
-                child: Text(
-                  'PREMIUM CINEMA EXPERIENCE',
-                  style: AppTextStyles.timestamp.copyWith(
-                    fontSize: 8,
-                    letterSpacing: 2,
-                    color: AppColors.textDisabled,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
+              const SizedBox(height: 34),
+              const _FooterTagline(),
+              const SizedBox(height: 16),
             ],
           ),
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          error: (e, _) => Center(
-            child: Text(e.toString()),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text(e.toString())),
         ),
       ),
     );
@@ -75,45 +81,37 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
         children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'AUDES',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1,
-                    color: AppColors.primary,
-                  ),
-                ),
-                TextSpan(
-                  text: 'IQ',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1,
-                    color: AppColors.accent,
-                  ),
-                ),
-              ],
-            ),
+          Image.asset(
+            'assets/icons/audesiq-launcher.png',
+            width: 44,
+            height: 44,
           ),
-
-          const SizedBox(height: 2),
-
-          Text(
-            'ACCESSIBLE CINEMA',
-            style: AppTextStyles.timestamp.copyWith(
-              fontSize: 8,
-              letterSpacing: 1.8,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textDisabled,
-            ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'AUDESIQ',
+                style: AppTextStyles.titleLarge.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                  color: const Color(0xFF191A2A),
+                ),
+              ),
+              Text(
+                'DISCOVER',
+                style: AppTextStyles.timestamp.copyWith(
+                  fontSize: 9,
+                  letterSpacing: 2.7,
+                  color: const Color(0xFF6D66FF),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -129,38 +127,31 @@ class _SearchBar extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/search'),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
-          height: 42,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F1F5),
-            borderRadius: BorderRadius.circular(20),
+            color: const Color(0xFFE9EAF0),
+            borderRadius: BorderRadius.circular(28),
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.search_rounded,
-                color: AppColors.textDisabled.withOpacity(0.7),
-                size: 18,
+                color: Color(0xFF262733),
+                size: 22,
               ),
-
               const SizedBox(width: 10),
-
               Expanded(
                 child: Text(
-                  'Search movies, actors...',
+                  'Search movies, genres, actors...',
                   style: AppTextStyles.searchPlaceholder.copyWith(
                     fontSize: 12,
-                    color: AppColors.textSecondary.withOpacity(0.8),
+                    color: const Color(0xFF444455),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-
-              Icon(
-                Icons.tune_rounded,
-                color: AppColors.primary.withOpacity(0.8),
-                size: 18,
               ),
             ],
           ),
@@ -173,16 +164,21 @@ class _SearchBar extends StatelessWidget {
 class _MovieSection extends StatelessWidget {
   final String title;
   final List<Movie> movies;
+  final List<String> titleOverrides;
+  final bool useBackgroundCard;
 
   const _MovieSection({
     required this.title,
     required this.movies,
+    required this.titleOverrides,
+    required this.useBackgroundCard,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 22),
+    return Container(
+      color: useBackgroundCard ? Colors.white : Colors.transparent,
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
           Padding(
@@ -192,44 +188,43 @@ class _MovieSection extends StatelessWidget {
                 Text(
                   title,
                   style: AppTextStyles.headingLarge.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: const Color(0xFF1D1D29),
                   ),
                 ),
-
                 const Spacer(),
-
                 Text(
                   'View All',
                   style: AppTextStyles.subhead.copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.primary,
                   ),
                 ),
-
                 const SizedBox(width: 2),
-
-                Icon(
-                  Icons.chevron_right_rounded,
+                const Icon(
+                  Icons.chevron_right,
                   color: AppColors.primary,
-                  size: 14,
+                  size: 16,
                 ),
               ],
             ),
           ),
-
-          const SizedBox(height: 10),
-
+          const SizedBox(height: 12),
           SizedBox(
-            height: 190,
+            height: 275,
             child: ListView.builder(
               padding: const EdgeInsets.only(left: 20),
               scrollDirection: Axis.horizontal,
               itemCount: movies.length,
-              itemBuilder: (_, i) {
-                return _MovieCard(movie: movies[i]);
-              },
+              itemBuilder: (_, i) => _MovieCard(
+                movie: movies[i],
+                titleOverride: i < titleOverrides.length
+                    ? titleOverrides[i]
+                    : movies[i].title,
+              ),
             ),
           ),
         ],
@@ -240,186 +235,122 @@ class _MovieSection extends StatelessWidget {
 
 class _MovieCard extends StatelessWidget {
   final Movie movie;
+  final String titleOverride;
 
-  const _MovieCard({
-    required this.movie,
-  });
+  const _MovieCard({required this.movie, required this.titleOverride});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/player', extra: movie),
-      child: Container(
-        width: 104,
-        margin: const EdgeInsets.only(right: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 158,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            movie.color,
-                            Color.lerp(
-                              movie.color,
-                              Colors.black,
-                              0.25,
-                            )!,
-                          ],
-                        ),
-                      ),
+      child: SizedBox(
+        width: 170,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 220,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
                     ),
-
-                    Positioned(
-                      top: 6,
-                      right: 6,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          movie.genre,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 7,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.55),
+                              Color.lerp(movie.color, Colors.black, 0.16)!,
+                              Color.lerp(movie.color, Colors.black, 0.45)!,
                             ],
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              movie.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                              ),
+                      ),
+                      Positioned(
+                        top: 7,
+                        right: 7,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF5146FF),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'AD',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700,
                             ),
-
-                            const SizedBox(height: 2),
-
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  color: AppColors.accent,
-                                  size: 10,
-                                ),
-
-                                const SizedBox(width: 2),
-
-                                Text(
-                                  movie.rating,
-                                  style: const TextStyle(
-                                    color: AppColors.accent,
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 4),
-
-                            Row(
-                              children: [
-                                if (movie.hasAD)
-                                  const _MiniBadge(label: 'AD'),
-
-                                if (movie.hasAD && movie.hasCC)
-                                  const SizedBox(width: 4),
-
-                                if (movie.hasCC)
-                                  const _MiniBadge(label: 'CC'),
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MiniBadge extends StatelessWidget {
-  final String label;
-
-  const _MiniBadge({
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 16,
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.6),
-          width: 0.6,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 7,
-            fontWeight: FontWeight.w700,
+              const SizedBox(height: 8),
+              Text(
+                titleOverride,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.subhead.copyWith(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1C1B28),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Row(
+                children: [
+                  Icon(
+                    Icons.closed_caption_outlined,
+                    size: 11,
+                    color: Color(0xFF6258FF),
+                  ),
+                  SizedBox(width: 3),
+                  Text(
+                    'CC',
+                    style: TextStyle(
+                      fontSize: 8,
+                      color: Color(0xFF2E2E38),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(
+                    Icons.star_border_rounded,
+                    size: 11,
+                    color: Color(0xFF2E2E38),
+                  ),
+                  SizedBox(width: 2),
+                  Text(
+                    '4.9',
+                    style: TextStyle(
+                      fontSize: 8,
+                      color: Color(0xFF2E2E38),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -432,61 +363,101 @@ class _AccessibilityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.divider,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE9EAF2),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.white.withOpacity(0.7),
+              blurRadius: 4,
+              offset: const Offset(0, -1),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF4F4FA),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.tv, color: AppColors.primary, size: 17),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Enhanced Accessibility',
+                    style: AppTextStyles.subhead.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1F1D2B),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'All movies in Audesiq include high-quality\nAudio Descriptions (AD) and Closed\nCaptions (CC) for an inclusive experience.',
+                    style: AppTextStyles.timestamp.copyWith(
+                      fontSize: 8,
+                      height: 1.35,
+                      color: const Color(0xFF4A4B59),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceAccent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.accessibility_new_rounded,
-              color: AppColors.primary,
-              size: 18,
-            ),
-          ),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Enhanced Accessibility',
-                  style: AppTextStyles.subhead.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 11,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-
-                const SizedBox(height: 2),
-
-                Text(
-                  'Audio Description and Closed Captions available.',
-                  style: AppTextStyles.timestamp.copyWith(
-                    fontSize: 9,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
+  }
+}
+
+class _FooterTagline extends StatelessWidget {
+  const _FooterTagline();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            _FooterLine(),
+            SizedBox(width: 10),
+            Icon(Icons.grid_view_rounded, size: 13, color: Color(0xFF8D8F99)),
+            SizedBox(width: 10),
+            _FooterLine(),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'PREMIUM CINEMA EXPERIENCE',
+          style: AppTextStyles.timestamp.copyWith(
+            fontSize: 8,
+            letterSpacing: 3.1,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF8D8F99),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FooterLine extends StatelessWidget {
+  const _FooterLine();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 34, height: 1, color: const Color(0xFFA3A5AF));
   }
 }

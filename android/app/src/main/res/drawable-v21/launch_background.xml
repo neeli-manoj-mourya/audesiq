@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Audesiq launch splash screen -->
+<!-- Audesiq launch splash — matches Flutter SplashScreen exactly -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/launch_background_color" />
+
+    <!-- 3-stop gradient: #F5F3FF → #EDEBFF → #D8D4FF (approximated as 2-stop) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#F5F3FF"
+                android:endColor="#D8D4FF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Center: icon + "Audesiq" + "Movies for Everyone" -->
+    <item
+        android:drawable="@drawable/ic_splash_content"
+        android:gravity="center" />
+
+    <!-- Bottom tagline: "• PREMIUM CINEMA EXPERIENCE" -->
+    <item
+        android:drawable="@drawable/ic_splash_footer"
+        android:gravity="bottom|center_horizontal"
+        android:bottom="32dp" />
+
 </layer-list>

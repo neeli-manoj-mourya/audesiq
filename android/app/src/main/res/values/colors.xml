@@ -2,4 +2,5 @@
 <resources>
     <!-- Audesiq brand background — matches AppColors.background #F5F3FF -->
     <color name="launch_background_color">#F5F3FF</color>
+    <color name="launch_android12_background">#F1EFF8</color>
 </resources>

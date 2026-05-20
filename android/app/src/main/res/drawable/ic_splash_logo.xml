@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Audesiq splash logo — transparent background, purple icon with audio bars and subtitle lines -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Main rounded-square purple background -->
+    <path
+        android:fillColor="#5B4DFF"
+        android:pathData="M160,70 L352,70 A70,70 0 0 1 422,140 L422,332 A70,70 0 0 1 352,402 L160,402 A70,70 0 0 1 90,332 L90,140 A70,70 0 0 1 160,70 Z" />
+
+    <!-- Inner border ring -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#7B70FF"
+        android:strokeWidth="6"
+        android:pathData="M160,78 L352,78 A62,62 0 0 1 414,140 L414,332 A62,62 0 0 1 352,394 L160,394 A62,62 0 0 1 98,332 L98,140 A62,62 0 0 1 160,78 Z" />
+
+    <!-- White circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M334,170 A78,78 0 0 1 178,170 A78,78 0 0 1 334,170 Z" />
+
+    <!-- Play triangle (stroke only) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#5B4DFF"
+        android:strokeWidth="10"
+        android:strokeLineJoin="round"
+        android:pathData="M238,135 L238,205 L292,170 Z" />
+
+    <!-- Audio bar 1 (shortest, left) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M205,305 A7,7 0 0 1 212,312 L212,322 A7,7 0 0 1 205,329 A7,7 0 0 1 198,322 L198,312 A7,7 0 0 1 205,305 Z" />
+
+    <!-- Audio bar 2 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M231,290 A7,7 0 0 1 238,297 L238,322 A7,7 0 0 1 231,329 A7,7 0 0 1 224,322 L224,297 A7,7 0 0 1 231,290 Z" />
+
+    <!-- Audio bar 3 (tallest, centre) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M257,268 A7,7 0 0 1 264,275 L264,322 A7,7 0 0 1 257,329 A7,7 0 0 1 250,322 L250,275 A7,7 0 0 1 257,268 Z" />
+
+    <!-- Audio bar 4 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M283,288 A7,7 0 0 1 290,295 L290,322 A7,7 0 0 1 283,329 A7,7 0 0 1 276,322 L276,295 A7,7 0 0 1 283,288 Z" />
+
+    <!-- Audio bar 5 (shortest, right) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M309,307 A7,7 0 0 1 316,314 L316,322 A7,7 0 0 1 309,329 A7,7 0 0 1 302,322 L302,314 A7,7 0 0 1 309,307 Z" />
+
+    <!-- Subtitle line 1 (left) -->
+    <path
+        android:fillColor="#8B80FF"
+        android:pathData="M100,438 L182,438 A5,5 0 0 1 187,443 A5,5 0 0 1 182,448 L100,448 A5,5 0 0 1 95,443 A5,5 0 0 1 100,438 Z" />
+
+    <!-- Subtitle line 2 (centre) -->
+    <path
+        android:fillColor="#8B80FF"
+        android:pathData="M215,438 L297,438 A5,5 0 0 1 302,443 A5,5 0 0 1 297,448 L215,448 A5,5 0 0 1 210,443 A5,5 0 0 1 215,438 Z" />
+
+    <!-- Subtitle line 3 (right) -->
+    <path
+        android:fillColor="#8B80FF"
+        android:pathData="M330,438 L412,438 A5,5 0 0 1 417,443 A5,5 0 0 1 412,448 L330,448 A5,5 0 0 1 325,443 A5,5 0 0 1 330,438 Z" />
+
+</vector>

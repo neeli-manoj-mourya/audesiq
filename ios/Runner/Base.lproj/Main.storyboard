@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
     </dependencies>
     <scenes>
         <!--Flutter View Controller-->
@@ -14,9 +14,39 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <subviews>
+                            <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="3h7-s9-c6A"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Audesiq" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VvQ-Gk-I32">
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="52"/>
+                                <color key="textColor" red="0.1098" green="0.102" blue="0.1765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Movies for Everyone" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FPe-Lc-Rg5">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.3686" green="0.3608" blue="0.4431" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="PREMIUM CINEMA EXPERIENCE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nZz-Qg-vCe">
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                <color key="textColor" red="0.5608" green="0.5451" blue="0.6824" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.949" green="0.9451" blue="0.9804" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="3h7-s9-c6A" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="3JY-Zm-NnW"/>
+                            <constraint firstItem="VvQ-Gk-I32" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ANk-Ox-CY4"/>
+                            <constraint firstItem="nZz-Qg-vCe" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="DNW-Xx-IzV"/>
+                            <constraint firstItem="VvQ-Gk-I32" firstAttribute="top" secondItem="3h7-s9-c6A" secondAttribute="bottom" constant="22" id="Sc9-WU-UhY"/>
+                            <constraint firstItem="3h7-s9-c6A" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-146" id="XWL-2b-qzM"/>
+                            <constraint firstItem="3h7-s9-c6A" firstAttribute="height" secondItem="3h7-s9-c6A" secondAttribute="width" multiplier="1:1" id="hb7-o2-9vW"/>
+                            <constraint firstItem="FPe-Lc-Rg5" firstAttribute="top" secondItem="VvQ-Gk-I32" secondAttribute="bottom" constant="12" id="icZ-VO-TTS"/>
+                            <constraint firstItem="nZz-Qg-vCe" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" constant="-88" id="jB5-Z7-QmR"/>
+                            <constraint firstItem="3h7-s9-c6A" firstAttribute="width" constant="136" id="lLo-7b-uAY"/>
+                            <constraint firstItem="FPe-Lc-Rg5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ueG-Mm-z8h"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

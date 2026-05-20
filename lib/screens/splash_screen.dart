@@ -12,7 +12,8 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> fadeIcon;
   late Animation<double> fadeText;
@@ -22,24 +23,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 1400),
       vsync: this,
     );
 
-    fadeIcon = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0, 0.4)),
-    );
-    fadeText = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.2, 0.6)),
-    );
-    scaleIcon = Tween<double>(begin: 0.8, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0, 0.4, curve: Curves.easeOut)),
+    // Both icon and text are immediately visible (opacity 1) so the first
+    // Flutter frame continues seamlessly from the native Android splash which
+    // now shows the full design. Only the scale settles in.
+    fadeIcon = const AlwaysStoppedAnimation<double>(1.0);
+    fadeText = const AlwaysStoppedAnimation<double>(1.0);
+    scaleIcon = Tween<double>(begin: 0.88, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0, 0.45, curve: Curves.easeOut),
+      ),
     );
 
     _controller.forward();
 
-    // Navigate after 5 seconds
-    Timer(const Duration(seconds: 5), () {
+    // Navigate after animation completes + brief hold.
+    Timer(const Duration(milliseconds: 5800), () {
       if (mounted) context.go('/dashboard');
     });
   }
@@ -52,7 +55,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -62,11 +64,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             stops: [0.0, 0.55, 1.0],
-            colors: [
-              Color(0xFFF5F3FF),
-              Color(0xFFEDEBFF),
-              Color(0xFFD8D4FF),
-            ],
+            colors: [Color(0xFFF5F3FF), Color(0xFFEDEBFF), Color(0xFFD8D4FF)],
           ),
         ),
         child: SafeArea(
@@ -102,10 +100,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
                         opacity: fadeText.value,
                         child: Column(
                           children: [
-                            Text(
-                              'Audesiq',
-                              style: AppTextStyles.displayLarge,
-                            ),
+                            Text('Audesiq', style: AppTextStyles.displayLarge),
                             const SizedBox(height: AppDimens.space2),
                             Text(
                               'Movies for Everyone',
@@ -160,4 +155,3 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
     );
   }
 }
-
