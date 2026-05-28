@@ -4,6 +4,7 @@ import '../screens/splash_screen.dart';
 import '../screens/dashboard_screen.dart';
 import '../screens/search_screen.dart';
 import '../screens/player_screen.dart';
+import '../screens/download_confirmation_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -20,6 +21,13 @@ class AppRouter {
       GoRoute(
         path: '/search',
         builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: '/download',
+        builder: (context, state) {
+          final movie = state.extra as Movie;
+          return DownloadConfirmationScreen(movie: movie);
+        },
       ),
       GoRoute(
         path: '/player',

@@ -1,14 +1,16 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../models/movie.dart';
-import '../providers/player_provider.dart';
+import '../models/playback_status.dart';
+import '../models/subtitle_entry.dart';
+import '../models/sync_state.dart';
+import '../providers/sync_provider.dart';
 import '../theme/theme.dart';
 
-const _scriptLines = [
+// Fallback static script shown while AD audio is not yet downloaded
+const _fallbackLines = [
   'In a world where silence speaks volumes,',
   'The truth is often hidden in plain sight.',
   'They called him the Architect of Echoes.',
@@ -30,28 +32,30 @@ const _scriptLines = [
   'Stay with the beat, stay with the light.',
 ];
 
-// Timed script markers (seconds) for lyric-like highlighting.
-const _lineStartSeconds = [
-  0,
-  8,
-  16,
-  24,
-  32,
-  40,
-  48,
-  56,
-  64,
-  72,
-  80,
-  88,
-  96,
-  104,
-  112,
-  120,
-  128,
-  136,
-  144,
-];
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+String _formatMs(int ms) {
+  final total = (ms ~/ 1000).clamp(0, 999999);
+  final m = total ~/ 60;
+  final s = total % 60;
+  return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+}
+
+int _subtitleIndexAt(List<SubtitleEntry> entries, int positionMs) {
+  if (entries.isEmpty) return 0;
+  for (int i = 0; i < entries.length; i++) {
+    if (entries[i].containsTimestamp(positionMs)) return i;
+    if (positionMs < entries[i].startMs)
+      return (i - 1).clamp(0, entries.length - 1);
+  }
+  return entries.length - 1;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PlayerScreen
+// ─────────────────────────────────────────────────────────────────────────────
 
 class PlayerScreen extends ConsumerStatefulWidget {
   final Movie movie;
@@ -64,32 +68,7 @@ class PlayerScreen extends ConsumerStatefulWidget {
 
 class _PlayerScreenState extends ConsumerState<PlayerScreen>
     with SingleTickerProviderStateMixin {
-  Timer? _ticker;
   late final AnimationController _syncController;
-
-  static const _totalSeconds = 150;
-
-  int _lineIndexForProgress(double progress) {
-    final elapsedSec = (progress * _totalSeconds).floor();
-    for (int i = _lineStartSeconds.length - 1; i >= 0; i--) {
-      if (elapsedSec >= _lineStartSeconds[i]) {
-        return i;
-      }
-    }
-    return 0;
-  }
-
-  void _updateProgressAndLine(WidgetRef ref, double progress) {
-    final clamped = progress.clamp(0.0, 1.0);
-    final notifier = ref.read(playerProvider.notifier);
-    notifier.updateProgress(clamped);
-    notifier.updateCurrentLine(_lineIndexForProgress(clamped));
-  }
-
-  void _skipBy(WidgetRef ref, double delta) {
-    final current = ref.read(playerProvider).progress;
-    _updateProgressAndLine(ref, current + delta);
-  }
 
   @override
   void initState() {
@@ -102,55 +81,62 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
 
   @override
   void dispose() {
-    _ticker?.cancel();
     _syncController.dispose();
     super.dispose();
   }
 
-  void _togglePlay(WidgetRef ref) {
-    final notifier = ref.read(playerProvider.notifier);
-    final state = ref.read(playerProvider);
-
-    notifier.togglePlayPause();
-
-    if (!state.isPlaying) {
-      _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
-        if (!mounted) return;
-        final current = ref.read(playerProvider);
-        final newProgress = (current.progress + (0.25 / _totalSeconds)).clamp(
-          0.0,
-          1.0,
-        );
-        _updateProgressAndLine(ref, newProgress);
-        if (newProgress >= 1.0) {
-          notifier.togglePlayPause();
-          _ticker?.cancel();
-        }
-      });
+  void _onPlayPause() {
+    final playbackManager = ref.read(audioPlaybackManagerProvider);
+    final status = ref.read(playbackStatusStreamProvider).valueOrNull;
+    if (status?.state == AdPlaybackState.playing) {
+      playbackManager.pause();
     } else {
-      _ticker?.cancel();
+      playbackManager.resume();
     }
   }
 
-  String _formatTime(double progress) {
-    final seconds = (progress * _totalSeconds).round();
-    final m = seconds ~/ 60;
-    final s = seconds % 60;
-    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  void _onSkipBack() {
+    final pm = ref.read(audioPlaybackManagerProvider);
+    pm.seekTo((pm.getCurrentPlaybackTimestampMs() - 5000).clamp(0, 999999999));
+  }
+
+  void _onSkipForward() {
+    final pm = ref.read(audioPlaybackManagerProvider);
+    pm.seekTo(pm.getCurrentPlaybackTimestampMs() + 5000);
   }
 
   @override
   Widget build(BuildContext context) {
     final movie = widget.movie;
-    final playerState = ref.watch(playerProvider);
+    final setupState = ref.watch(playerSetupProvider);
+    final playbackStatus = ref.watch(playbackStatusStreamProvider).valueOrNull;
+    final subtitleTrack = ref.watch(subtitleTrackProvider);
 
-    final currentLineIndex = _lineIndexForProgress(playerState.progress);
+    // Determine script lines and highlighted index
+    final List<String> scriptLines;
+    final int currentLineIndex;
 
-    final elapsed = _formatTime(playerState.progress);
-    final remainingSeconds = ((1 - playerState.progress) * _totalSeconds)
-        .round();
+    if (subtitleTrack != null && subtitleTrack.entries.isNotEmpty) {
+      scriptLines = subtitleTrack.entries.map((e) => e.text).toList();
+      currentLineIndex = _subtitleIndexAt(
+        subtitleTrack.entries,
+        playbackStatus?.currentPositionMs ?? 0,
+      );
+    } else {
+      scriptLines = _fallbackLines;
+      currentLineIndex = 0;
+    }
+
+    // Seek bar values from real AD audio playback
+    final durationMs = playbackStatus?.durationMs ?? 0;
+    final positionMs = playbackStatus?.currentPositionMs ?? 0;
+    final progress = durationMs > 0
+        ? (positionMs / durationMs).clamp(0.0, 1.0)
+        : 0.0;
+    final elapsed = _formatMs(positionMs);
     final remaining =
-        '-${(remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(remainingSeconds % 60).toString().padLeft(2, '0')}';
+        '-${_formatMs((durationMs - positionMs).clamp(0, durationMs))}';
+    final isPlaying = playbackStatus?.state == AdPlaybackState.playing;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F2FA),
@@ -161,29 +147,43 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
             const _TopBar(),
             const SizedBox(height: 14),
             _MovieInfoRow(movie: movie),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
+
+            // ── AD subtitle viewer (replaces static lyrics) ──────────────
             Expanded(
               child: _ScriptViewer(
-                lines: _scriptLines,
+                lines: scriptLines,
                 currentIndex: currentLineIndex,
               ),
             ),
             const SizedBox(height: 10),
+
+            // ── Seek bar — real AD audio position ────────────────────────
             _SeekBar(
-              progress: playerState.progress,
+              progress: progress,
               elapsed: elapsed,
               remaining: remaining,
-              onChanged: (v) => _updateProgressAndLine(ref, v),
+              onChanged: setupState.isReady
+                  ? (v) {
+                      ref
+                          .read(audioPlaybackManagerProvider)
+                          .seekTo((v * durationMs).round());
+                    }
+                  : null,
             ),
             const SizedBox(height: 14),
+
+            // ── Playback controls — real AD audio ────────────────────────
             _PlaybackControls(
-              isPlaying: playerState.isPlaying,
-              onPlayPause: () => _togglePlay(ref),
-              onSkipBack: () => _skipBy(ref, -0.05),
-              onSkipForward: () => _skipBy(ref, 0.05),
+              isPlaying: isPlaying,
+              onPlayPause: setupState.isReady ? _onPlayPause : null,
+              onSkipBack: setupState.isReady ? _onSkipBack : null,
+              onSkipForward: setupState.isReady ? _onSkipForward : null,
             ),
             const SizedBox(height: 18),
-            _SyncButton(rotation: _syncController),
+
+            // ── Sync button ───────────────────────────────────────────────
+            const _SyncButton(),
             const SizedBox(height: 16),
           ],
         ),
@@ -191,6 +191,255 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Setup banner — shows download button, progress, or ready state
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SetupBanner extends ConsumerWidget {
+  final PlayerSetupState setupState;
+
+  const _SetupBanner({required this.setupState});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final phase = setupState.phase;
+
+    Color bgColor;
+    Color borderColor;
+    Widget leading;
+
+    switch (phase) {
+      case SetupPhase.initial:
+        bgColor = const Color(0xFFEEF0FF);
+        borderColor = const Color(0xFF5A52EB);
+        leading = const Icon(
+          Icons.download_rounded,
+          color: Color(0xFF5A52EB),
+          size: 18,
+        );
+      case SetupPhase.downloading:
+      case SetupPhase.indexing:
+        bgColor = const Color(0xFFFFF9E6);
+        borderColor = const Color(0xFFFFD966);
+        leading = const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFB8860B)),
+          ),
+        );
+      case SetupPhase.ready:
+        bgColor = const Color(0xFFE6F9EE);
+        borderColor = const Color(0xFF22BB66);
+        leading = const Icon(
+          Icons.check_circle_outline_rounded,
+          color: Color(0xFF22BB66),
+          size: 18,
+        );
+      case SetupPhase.error:
+        bgColor = const Color(0xFFFFEEEE);
+        borderColor = const Color(0xFFFF6B6B);
+        leading = const Icon(
+          Icons.error_outline_rounded,
+          color: Color(0xFFFF6B6B),
+          size: 18,
+        );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: (phase == SetupPhase.initial || phase == SetupPhase.error)
+            ? () => ref.read(playerSetupProvider.notifier).downloadAndPrepare()
+            : null,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: borderColor, width: 1),
+          ),
+          child: Row(
+            children: [
+              leading,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  phase == SetupPhase.initial
+                      ? 'Tap to download audio description'
+                      : setupState.message,
+                  style: AppTextStyles.timestamp.copyWith(
+                    fontSize: 12,
+                    color: const Color(0xFF2A2C37),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (phase == SetupPhase.initial || phase == SetupPhase.error)
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Color(0xFF7C7F8B),
+                  size: 18,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Caption display — current AD subtitle at the AD playback position
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _CaptionDisplay extends ConsumerWidget {
+  final int positionMs;
+
+  const _CaptionDisplay({required this.positionMs});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final subtitleTrack = ref.watch(subtitleTrackProvider);
+    final captionText = subtitleTrack?.subtitleAt(positionMs)?.text ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF9E6),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFFFD966), width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Captions',
+              style: AppTextStyles.timestamp.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF8B7500),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              captionText.isEmpty ? 'No caption at this moment' : captionText,
+              style: AppTextStyles.bodyLargeSecondary.copyWith(
+                fontSize: 13,
+                color: const Color(0xFF3E3E3E),
+                height: 1.4,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sync button — mirrors Android MainViewModel.onSyncPressed() flow
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SyncButton extends ConsumerWidget {
+  const _SyncButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final setupState = ref.watch(playerSetupProvider);
+    final syncPhase = ref.watch(syncStateStreamProvider).valueOrNull?.phase;
+
+    final isSyncing = setupState.isSyncing;
+    final isConnected =
+        setupState.hasSyncSuccess || syncPhase == SyncPhase.stable;
+    final canTap = setupState.isReady;
+
+    return SizedBox(
+      width: 220,
+      height: 44,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: !canTap
+                ? [const Color(0xFFB0B0C8), const Color(0xFFB0B0C8)]
+                : isConnected
+                ? [const Color(0xFF00AA44), const Color(0xFF22DD66)]
+                : [const Color(0xFF5047EA), const Color(0xFF6E65F4)],
+          ),
+        ),
+        child: TextButton(
+          onPressed: !canTap
+              ? null
+              : isSyncing
+              ? () => ref.read(playerSetupProvider.notifier).cancelSync()
+              : () => ref.read(playerSetupProvider.notifier).onSyncPressed(),
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isSyncing)
+                const SizedBox(
+                  width: 15,
+                  height: 15,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2,
+                  ),
+                )
+              else if (isConnected)
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.white,
+                  size: 15,
+                )
+              else
+                const Icon(Icons.sync_rounded, color: Colors.white, size: 15),
+              const SizedBox(width: 6),
+              Text(
+                isSyncing
+                    ? 'LISTENING…'
+                    : isConnected
+                    ? 'IN SYNC  ✓'
+                    : !canTap
+                    ? 'DOWNLOAD FIRST'
+                    : 'SYNC AD',
+                style: AppTextStyles.button.copyWith(
+                  fontSize: 11,
+                  color: Colors.white,
+                  letterSpacing: 0.4,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Unchanged widgets (visual design preserved exactly)
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _TopBar extends StatelessWidget {
   const _TopBar();
@@ -342,11 +591,48 @@ class _ScriptViewerState extends State<_ScriptViewer> {
     if (oldWidget.currentIndex != widget.currentIndex) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        final targetContext = _lineKeys[widget.currentIndex].currentContext;
-        if (targetContext != null) {
+        _scrollToIndex(widget.currentIndex);
+      });
+    }
+  }
+
+  /// Scrolls the ListView so that item [idx] is visible and centred.
+  ///
+  /// ListView.separated is lazy — items outside the current viewport are not
+  /// built, so their GlobalKey.currentContext is null.  When that happens we
+  /// first jump to an estimated offset (which forces Flutter to build the
+  /// surrounding items on the next layout pass), then schedule a second
+  /// post-frame callback that calls Scrollable.ensureVisible once the target
+  /// RenderObject actually exists.
+  void _scrollToIndex(int idx) {
+    if (!_scrollController.hasClients) return;
+    if (idx < 0 || idx >= _lineKeys.length) return;
+
+    final targetCtx = _lineKeys[idx].currentContext;
+    if (targetCtx != null) {
+      Scrollable.ensureVisible(
+        targetCtx,
+        alignment: 0.35,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOut,
+      );
+    } else {
+      // Item is virtualised — jump to an approximate offset first so Flutter
+      // builds it, then refine with ensureVisible on the next frame.
+      // ~50 px per item (2 lines × 17 px × 1.35 leading ≈ 46 px) + 16 px separator.
+      const estimatedItemHeight = 50.0;
+      const separatorHeight = 16.0;
+      final approxOffset = (idx * (estimatedItemHeight + separatorHeight))
+          .clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.jumpTo(approxOffset);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final ctx = _lineKeys[idx].currentContext;
+        if (ctx != null) {
           Scrollable.ensureVisible(
-            targetContext,
-            alignment: 0.32,
+            ctx,
+            alignment: 0.35,
             duration: const Duration(milliseconds: 320),
             curve: Curves.easeOut,
           );
@@ -412,7 +698,7 @@ class _SeekBar extends StatelessWidget {
   final double progress;
   final String elapsed;
   final String remaining;
-  final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChanged;
 
   const _SeekBar({
     required this.progress,
@@ -439,6 +725,9 @@ class _SeekBar extends StatelessWidget {
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
               overlayColor: const Color(0x225A52EB),
               trackHeight: 4,
+              disabledActiveTrackColor: const Color(0xFFB0B0C8),
+              disabledInactiveTrackColor: const Color(0xFFE2E3F4),
+              disabledThumbColor: const Color(0xFFD0D0D0),
             ),
             child: Slider(value: progress, onChanged: onChanged),
           ),
@@ -474,9 +763,9 @@ class _SeekBar extends StatelessWidget {
 
 class _PlaybackControls extends StatelessWidget {
   final bool isPlaying;
-  final VoidCallback onPlayPause;
-  final VoidCallback onSkipBack;
-  final VoidCallback onSkipForward;
+  final VoidCallback? onPlayPause;
+  final VoidCallback? onSkipBack;
+  final VoidCallback? onSkipForward;
 
   const _PlaybackControls({
     required this.isPlaying,
@@ -487,6 +776,7 @@ class _PlaybackControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final enabled = onPlayPause != null;
     return Container(
       width: 220,
       height: 66,
@@ -508,9 +798,11 @@ class _PlaybackControls extends StatelessWidget {
         children: [
           IconButton(
             onPressed: onSkipBack,
-            icon: const Icon(
+            icon: Icon(
               Icons.skip_previous_rounded,
-              color: Color(0xFF14161D),
+              color: enabled
+                  ? const Color(0xFF14161D)
+                  : const Color(0xFFB0B0C8),
               size: 28,
             ),
           ),
@@ -520,7 +812,9 @@ class _PlaybackControls extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: const Color(0xFF5A52EB),
+                color: enabled
+                    ? const Color(0xFF5A52EB)
+                    : const Color(0xFFB0B0C8),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
@@ -532,69 +826,15 @@ class _PlaybackControls extends StatelessWidget {
           ),
           IconButton(
             onPressed: onSkipForward,
-            icon: const Icon(
+            icon: Icon(
               Icons.skip_next_rounded,
-              color: Color(0xFF14161D),
+              color: enabled
+                  ? const Color(0xFF14161D)
+                  : const Color(0xFFB0B0C8),
               size: 28,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SyncButton extends StatelessWidget {
-  final AnimationController rotation;
-
-  const _SyncButton({required this.rotation});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 220,
-      height: 44,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          gradient: const LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [Color(0xFF5047EA), Color(0xFF6E65F4)],
-          ),
-        ),
-        child: TextButton(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(22),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RotationTransition(
-                turns: rotation,
-                child: const Icon(
-                  Icons.sync_rounded,
-                  color: Colors.white,
-                  size: 15,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'SYNC MOVIE  88%',
-                style: AppTextStyles.button.copyWith(
-                  fontSize: 11,
-                  color: Colors.white,
-                  letterSpacing: 0.4,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

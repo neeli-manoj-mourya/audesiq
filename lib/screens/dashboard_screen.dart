@@ -242,7 +242,7 @@ class _MovieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/player', extra: movie),
+      onTap: () => context.push('/download', extra: movie),
       child: SizedBox(
         width: 170,
         child: Padding(
